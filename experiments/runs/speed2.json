@@ -1,0 +1,30 @@
+{
+ "name": "speed2",
+ "overrides": {
+  "budget_minutes": 0.6,
+  "eval_every_minutes": 0.55,
+  "num_threads": 2
+ },
+ "final": {
+  "score": 0.43598778037491237,
+  "success_rate": 0.981,
+  "mean_steps_success": 82.37461773700306
+ },
+ "train_wall_min": 0.6630332430203756,
+ "iterations": 23,
+ "env_steps": 92647,
+ "host": "claude",
+ "curve": [
+  {
+   "minutes": 0.5661403417587281,
+   "iteration": 23,
+   "env_steps": 92647,
+   "train_score": 0.4223385478574427,
+   "train_success": 0.9847328244274809,
+   "eval_score": 0.43975742220137404,
+   "eval_success": 0.995,
+   "eval_steps": 82.95477386934674,
+   "min_std": 0.1
+  }
+ ]
+}

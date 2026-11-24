@@ -1,0 +1,30 @@
+{
+ "name": "speed4",
+ "overrides": {
+  "budget_minutes": 0.6,
+  "eval_every_minutes": 0.55,
+  "num_threads": 4
+ },
+ "final": {
+  "score": 0.43944346790803074,
+  "success_rate": 0.982,
+  "mean_steps_success": 81.66242362525458
+ },
+ "train_wall_min": 0.6432176987330119,
+ "iterations": 30,
+ "env_steps": 120789,
+ "host": "claude",
+ "curve": [
+  {
+   "minutes": 0.5628801743189494,
+   "iteration": 30,
+   "env_steps": 120789,
+   "train_score": 0.424491776953338,
+   "train_success": 0.9813753581661891,
+   "eval_score": 0.4395111980054353,
+   "eval_success": 0.99,
+   "eval_steps": 82.54040404040404,
+   "min_std": 0.1
+  }
+ ]
+}

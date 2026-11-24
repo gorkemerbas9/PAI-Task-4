@@ -1,0 +1,41 @@
+{
+ "name": "tst",
+ "overrides": {
+  "budget_minutes": 0.3,
+  "eval_every_minutes": 0.1,
+  "num_threads": 1
+ },
+ "final": {
+  "score": 0.4239806674451416,
+  "success_rate": 0.9825,
+  "mean_steps_success": 85.41679389312976
+ },
+ "train_wall_min": 0.3943405270576477,
+ "iterations": 10,
+ "env_steps": 40297,
+ "host": "claude",
+ "curve": [
+  {
+   "minutes": 0.14492339690526326,
+   "iteration": 7,
+   "env_steps": 28225,
+   "train_score": 0.42050624725587177,
+   "train_success": 0.9833333333333333,
+   "eval_score": 0.4213372336037074,
+   "eval_success": 0.985,
+   "eval_steps": 86.46192893401015,
+   "min_std": 0.1
+  },
+  {
+   "minutes": 0.2815772215525309,
+   "iteration": 10,
+   "env_steps": 40297,
+   "train_score": 0.415000961417105,
+   "train_success": 0.9924242424242424,
+   "eval_score": 0.4288525260263471,
+   "eval_success": 0.99,
+   "eval_steps": 85.16161616161617,
+   "min_std": 0.1
+  }
+ ]
+}
