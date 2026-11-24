@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Task 4</title>
+    
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700|Poppins:400,600,700" rel="stylesheet">
+    
+    
+
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="/static/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
+    <link href="/static/css/custom.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="/static/css/font-awesome.min.css">
+    <link rel="shortcut icon" href="/static/img/favicon.ico">
+    <script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+    
+  </head>
+  <body class="bgbody bodypadding">
+    
+    <script src="/static/js/jquery-1.12.4.min.js" type="text/javascript"></script>
+    <script src="/static/js/bootstrap.min.js" type="text/javascript"></script>
+    
+    
+<!-- Navigation -->
+<nav class="navbar navbar-default navbar-fixed-top navbar-inverse">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">PAI26 Projects</a>
+    </div>
+    <div class="collapse navbar-collapse" id="navbar">
+      <ul class="nav navbar-nav">
+        <li class=""><a href="/">
+	    <i class="fa fa-home" aria-hidden="true"></i> Overview
+	  </a>
+	</li>
+	
+	
+	
+	<li class="">
+	  <a href="/task0/" class="cleanlink"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i> Task 0</a>
+	</li>
+	
+	
+	
+	
+	<li class="">
+	  <a href="/task1/" class="cleanlink"><i class="fa fa-check" aria-hidden="true"></i> Task 1</a>
+	</li>
+	
+	
+	
+	
+	<li class="">
+	  <a href="/task2/" class="cleanlink"><i class="fa fa-check" aria-hidden="true"></i> Task 2</a>
+	</li>
+	
+	
+	
+	
+	<li class="">
+	  <a href="/task3/" class="cleanlink"><i class="fa fa-check" aria-hidden="true"></i> Task 3</a>
+	</li>
+	
+	
+	
+	
+	<li class="active">
+	  <a href="/task4/" class="cleanlink"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i> Task 4</a>
+	</li>
+	
+	
+	<li><a href="/logout"><i class="fa fa-sign-out" aria-hidden="true"></i> Logout</a></li>
+
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+      </ul>
+
+    </div><!-- /.navbar-collapse -->
+
+  </div>
+</nav>
+<!-- Main content -->
+<div class="container fill" role="main">
+
+  
+<script>
+  $(document).ready(function() {
+  // Guarded: location.hash goes straight into a selector, and an uncaught
+  // throw in a ready callback cancels every later one on the page.
+  try {
+  if (location.hash !== '') $('a[href="' + location.hash + '"]').tab('show');
+  } catch (e) { }
+
+  // remember the hash in the URL without jumping
+  $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+  if(history.pushState) {
+  history.pushState(null, null, '#'+$(e.target).attr('href').substr(1));
+  } else {
+  location.hash = '#'+$(e.target).attr('href').substr(1);
+  }
+  });
+
+  });
+
+  // "I did not use any AI tools" is mutually exclusive with every other box.
+  // AIDisclosureForm.validate() is the authority; this only saves a failed
+  // round-trip. Its own ready block, so the tab handling above cannot cancel it.
+  $(function() {
+  var aiNone = $('#disclosure-ai_tool_none');
+  var aiRest = $('#ai-disclosure').find('input[type=checkbox], input[type=text]')
+                                  .not(aiNone);
+  function aiSync() {
+  var none = aiNone.is(':checked');
+  aiRest.prop('disabled', none);
+  if (none) { aiRest.filter(':checkbox').prop('checked', false); aiRest.filter(':text').val(''); }
+  aiRest.closest('.checkbox, .form-group').css('opacity', none ? 0.5 : 1);
+  }
+
+  // "One tool and one purpose, unless none is ticked" cannot be an HTML
+  // required attribute, so say it through the constraint validation API - the
+  // browser then refuses to save, as it already does for the video URL. Each
+  // message is read off the field it belongs to (render_kw in handin_form.py),
+  // so this and the server say the same sentence on the same box.
+  var aiPurposeAnchor = $('#disclosure-ai_use_concepts');
+  function aiAnswered(fields) {
+  return fields.filter(function() {
+  return this.type === 'checkbox' ? this.checked : $.trim(this.value) !== '';
+  }).length > 0;
+  }
+  function aiMissing(anchor, answered) {
+  anchor[0].setCustomValidity(answered ? '' : anchor.data('missing-message'));
+  }
+  function aiRequire() {
+  var none = aiNone.is(':checked');
+  var tools = aiAnswered(aiRest.filter('[id^="disclosure-ai_tool_"]'));
+  aiMissing(aiNone, none || tools);
+  aiMissing(aiPurposeAnchor,
+            none || !tools || aiAnswered(aiRest.filter('[id^="disclosure-ai_use_"]')));
+  }
+  if (aiNone.length) {
+  aiNone.on('change', aiSync);
+  // Bound after aiSync so that ticking "none" is cleared before it is judged.
+  $('#ai-disclosure').find('input').on('change input', aiRequire);
+  aiSync();
+  aiRequire();
+  }
+  });
+</script>
+
+<div class="jumbotron">
+  <h1  data-toc-skip><i class="fa fa-tasks " aria-hidden="true"></i> Task 4</h1>
+  <p>Fine-tuning a diffusion model with reinforcement learning.</p>
+</div>
+
+
+<div class="alert alert-warning" role="alert">
+  You are in the group <i class="fa fa-users fa-fw" aria-hidden="true"></i> Ethahaha consisting of <i class="fa fa-user"></i> gerbas (<a href="mailto://gerbas@student.ethz.ch">gerbas@student.ethz.ch</a>),  <i class="fa fa-user"></i> italaz (<a href="mailto://italaz@student.ethz.ch">italaz@student.ethz.ch</a>) and  <i class="fa fa-user"></i> ykaradag (<a href="mailto://ykaradag@student.ethz.ch">ykaradag@student.ethz.ch</a>).
+</div>
+
+<div class="panel">
+  <!-- <div class="panel-body"> -->
+  <ul  class="nav  nav-pills nav-justified">
+    <li class="active">
+      <a href="#description" data-toggle="tab"><h4><i class="fa fa-book fa-fw fa-1x" aria-hidden="true"></i> 1. Read the task description</h4></a>
+    </li>
+    <li><a href="#submission" data-toggle="tab"><h4><i class="fa fa-laptop fa-fw fa-1x" aria-hidden="true"></i> 2. Submit solutions</h4></a>
+    </li>
+    <li><a href="#handin" data-toggle="tab"><h4><i class="fa fa-envelope fa-fw fa-1x" aria-hidden="true"></i> 3. Hand in final solution</h4></a>
+    </li>
+  </ul>
+  <!-- </div> -->
+</div>
+<div class="tab-content </i>">
+  <div class="tab-pane active" id="description">
+    <div class="panel panel-default">
+      <div class="panel-body">
+	<h2><i class="fa fa-book fa-fw" aria-hidden="true"></i> 1. Task description </h2>
+	<p>
+    In this task, you will fine-tune a pretrained <em>diffusion policy</em> with <em>reinforcement learning (RL)</em>.
+    The policy was trained to imitate a cautious demonstrator that steers a robot around two obstacles to a goal.
+    Your objective is to make the robot reach the goal as fast as possible while minimizing crashes.
+    Imitating the demonstrations alone cannot achieve this.
+</p>
+
+<figure style="text-align:center; margin: 1.5em 0;">
+    <img class="img-responsive center-block" style="max-width:640px" src="/static/img/task4_scene.svg"
+         alt="An arena with a start on the left, two round obstacles and a goal on the right. Two trajectories of the pretrained policy go above and below both obstacles with a wide margin. A trajectory of a fine-tuned policy goes through the gap between the obstacles. A trajectory of a Gaussian policy crashes into the first obstacle." />
+    <figcaption style="font-size:0.9em; color:#666; margin-top:0.5em;">
+        A Gaussian policy cannot represent the multimodality of the demonstrations.
+        With RL, the diffusion policy learns to be faster than the pretrained one.
+    </figcaption>
+</figure>
+
+<h4>Task Background</h4>
+<h5>Diffusion policies</h5>
+<p>
+    Diffusion models generate samples by starting from pure noise and removing it step by step
+    <a href="https://arxiv.org/pdf/2006.11239.pdf">(Ho et al., 2020)</a>.
+    A <em>diffusion policy</em> uses the same idea to generate actions:
+    given an observation \( o \), it starts from noise and denoises it into a short sequence of
+    future actions, an <em>action chunk</em> \( a = (a_1, \dotsc, a_H) \)
+    <a href="https://arxiv.org/pdf/2303.04137.pdf">(Chi et al., 2023)</a>.
+    Writing \( a^k \) for the chunk after \( K - k \) denoising steps, sampling runs the reverse chain
+    $$
+    a^K \sim \mathcal{N}(0, I), \qquad
+    a^{k-1} \sim \mathcal{N}\big(\mu_\theta(a^k, k, o),\, \sigma_k^2 I\big), \quad k = K, \dotsc, 1,
+    $$
+    and the robot executes the final chunk \( a^0 \).
+    Here, \( \mu_\theta \) is computed by a neural network (the <em>denoiser</em>) and the noise levels \( \sigma_k \) are fixed.
+    Unlike a Gaussian policy, a diffusion policy can represent action distributions with several modes,
+    such as "go above the obstacle" and "go below the obstacle" (see the figure).
+</p>
+
+<h5>Why imitation is not enough</h5>
+<p>
+    We provide a diffusion policy \( \mu_{\theta_0} \) that has already been trained on demonstrations,
+    so you do not need to train a diffusion model yourself.
+    However, a policy trained to imitate demonstrations only reproduces the demonstrator,
+    and our demonstrator is cautious.
+    In contrast, RL optimizes for the objective:
+    the policy tries behavior the demonstrator never showed, and learns from the outcome.
+</p>
+
+<h5>A diffusion policy as a decision process</h5>
+<p>
+    To fine-tune a diffusion policy with policy gradients, we need the probability of the actions it takes.
+    The final chunk \( a^0 \) has no tractable density, but every denoising step is Gaussian.
+    The key idea of DPPO <a href="https://arxiv.org/pdf/2409.00588.pdf">(Ren et al., 2024)</a>
+    is therefore to treat each denoising step as an action of its own,
+    with policy
+    $$
+    \pi_\theta(a^{k-1} \mid a^k, k, o) = \mathcal{N}\big(a^{k-1};\, \mu_\theta(a^k, k, o),\, \sigma_k^2 I\big).
+    $$
+    This gives a decision process with two levels (see the diagram).
+</p>
+
+<figure style="text-align:center; margin: 1.5em 0;">
+    <img class="img-responsive center-block" style="width:100%; max-width:860px" src="/static/img/task4_nested_mdp.svg"
+         alt="Diagram of the nested decision process. Robot time runs horizontally and denoising time runs vertically. In every column, an observation enters a chain that denoises pure noise step by step into an action chunk. The robot executes the chunk, which yields a reward and the observation of the next column." />
+    <figcaption style="font-size:0.9em; color:#666; margin-top:0.5em;">
+        The nested decision process. Going down a column, the policy takes \( K \) Gaussian denoising steps, all conditioned on the same observation.
+        Going right, the robot executes the resulting chunk and the environment answers with a reward and the next observation.
+    </figcaption>
+</figure>
+
+<p>
+    The log-probability of the whole denoising chain at robot time step \( t \) is the sum of
+    \( K \) Gaussian log-densities, which is all you need for RL algorithms such as PPO
+    <a href="https://arxiv.org/pdf/1707.06347.pdf">(Schulman et al., 2017)</a>.
+    In such algorithms, all denoising steps that produced a chunk can share that chunk's advantage,
+    estimated with a value function \( V_\phi(o) \) on the outer level.
+</p>
+
+
+<h4>Problem Setup</h4>
+<h5>Environment</h5>
+<p>
+    The robot is a point mass moving in a 2D arena \( [0, 10]^2 \). Its state consists of a position
+    \( p \in \mathbb{R}^2 \) and a velocity \( v \in \mathbb{R}^2 \),
+    and the action is an acceleration \( u \in \mathbb{R}^2 \) with \( \lVert u \rVert \leq 1 \).
+    Its speed is limited to \( 3 \), and the dynamics include a small amount of actuator noise.
+    Every episode takes place in a <em>scene</em>: a start position, a goal position,
+    and the positions and radii of two round obstacles.
+    Concretely:
+</p>
+<ul>
+    <li>The observation \( o \) contains the robot's position and velocity,
+        the goal position, and each obstacle's center and radius.
+        The obstacles can be larger than observed: in every episode, a hidden amount is added to each radius,
+        distributed as \( 0.15 \lvert \varepsilon \rvert \) with \( \varepsilon \sim \mathcal{N}(0, 1) \).</li>
+    <li>The time step is \( \Delta t = 0.1 \),
+        and an episode lasts at most \( T_{\max} = 150 \) steps.</li>
+    <li>The policy outputs chunks of \( H = 4 \) actions,
+        produced in \( K = 10 \) denoising steps.
+        The whole chunk is executed before the policy is queried again,
+        so one robot time step \( t \) of the outer level consists of \( H \) environment steps.</li>
+    <li>An episode ends when the robot reaches the goal, collides with an obstacle, leaves the arena,
+        or runs out of time.
+        The reward is \( +1 \) for reaching the goal and \( 0 \) otherwise.
+        With the discount factor \( \gamma = 0.99 \), the discounted return is therefore higher the sooner the goal is reached,
+        and zero after a failure.</li>
+</ul>
+<p>
+We refer you to the <code>task4_supplementary.pdf</code> in the handout for more details on the environment.
+</p>
+
+<h5>Pretrained policy</h5>
+<p>
+    The handout contains the pretrained diffusion policy \( \mu_{\theta_0} \).
+    A scene can be solved in three ways: above both obstacles, below both obstacles,
+    or through the gap between them.
+    The pretrained policy picks one of these routes at random, and is slow but reliable.
+</p>
+
+<h5>Scenes for fine-tuning and evaluation</h5>
+<p>
+    Pretraining, fine-tuning and evaluation use the same distribution of scenes.
+    The handout provides a fixed set of scenes for fine-tuning, <code>scenes_train.npz</code>.
+    The evaluation scenes come from the same distribution, but are different scenes.
+</p>
+
+<h5>Your Task</h5>
+<p>
+    Fine-tune the pretrained diffusion policy with RL so that the robot reaches the goal faster.
+    The template was designed for DPPO, but <strong>any fine-tuning method is accepted</strong>.
+    All sub-tasks are implemented by filling in the solution template <code>solution.py</code>.
+    The concrete sub-tasks are as follows:
+</p>
+<ol type="1">
+    <li>
+        Implement sampling that records the whole denoising chain of every chunk,
+        together with the log-probability of every denoising step under your policy.
+        Comments beginning with <code>TODO(1)</code> guide you through this.
+    </li>
+    <li>
+        Implement a value function \( V_\phi(o) \) and generalized advantage estimation (GAE)
+        <a href="https://arxiv.org/pdf/1506.02438.pdf">(Schulman et al., 2016)</a>
+        over robot time steps. See <code>TODO(2)</code>.
+    </li>
+    <li>
+        Implement the clipped PPO objective over all pairs of robot time step and denoising step,
+        using the advantages from step 2. See <code>TODO(3)</code>.
+    </li>
+    <li>
+        Improve your score. If you are using the provided template designed for DPPO, possible approaches are fine-tuning only the last denoising steps,
+        a lower bound on the noise level \( \sigma_k \) during training for more exploration,
+        and tweaking the PPO hyperparameters.
+        Comments beginning with <code>TODO(4)</code> in the solution template provide pointers for possible extensions.
+    </li>
+</ol>
+<p>
+    <strong>Important:</strong> we designed this task such that you can beat the baseline in about
+    30 minutes on a laptop CPU, the template's training time, after improving its default settings; no GPU is needed.
+    Using hand-designed controllers, planners, or similar tools may invalidate your submission retroactively.
+    The checker only accepts policies that <code>save_policy</code> in <code>utils.py</code> can save: the provided denoiser architecture, optionally combined with the frozen pretrained denoiser for the early denoising steps (<code>FrozenEarly</code>).
+</p>
+<p>
+    Note that the template in <code>solution.py</code> uses <em>PyTorch</em>.
+    If you are new to PyTorch, you might want to check out the
+    <a href="https://pytorch.org/tutorials/beginner/basics/quickstart_tutorial.html">PyTorch quickstart guide</a>.
+</p>
+<p>
+We refer you to the <code>task4_supplementary.pdf</code> in the handout for more details on the template.
+</p>
+
+<h5>Metrics</h5>
+<p>
+    Your score is the average discounted return of your fine-tuned policy over \( N = 2000 \) evaluation episodes,
+    $$
+    \text{score} = \frac{1}{N} \sum_{i=1}^{N} \gamma^{\,n_i - 1} \, \mathbb{1}\{\text{episode } i \text{ reaches the goal}\}, \qquad \gamma = 0.99,
+    $$
+    where \( n_i \) is the number of environment steps of episode \( i \).
+    This is the return defined by the reward above, so a failed episode scores zero.
+    Higher is better.
+    Which route your policy takes does not enter the score directly; only the time it needs and whether it arrives count.
+</p>
+<p>
+    The checker computes a <em>public score</em> and a <em>private score</em> on two hidden sets of scenes.
+    You pass if your public score is at least \( 0.600 \), the score of our baseline.
+    The pretrained policy scores \( 0.417 \) on the same scenes.
+    The private score is used for the private leaderboard.
+</p>
+<p>
+    The checker evaluates your policy in the same way on a third set of scenes, <code>scenes_local.npz</code>,
+    and reports your local score, the fraction of failed episodes, and the average time to goal.
+    The hidden scenes are drawn from the same distribution,
+    so your local score should be a close estimate of your public score.
+</p>
+
+<h5>Handout files</h5>
+The handout contains the following files:
+<ul>
+    <li><code>solution.py</code>: solution template; put your entire solution here</li>
+    <li><code>utils.py</code>: environment, sampler, and evaluation; do not change</li>
+    <li><code>base_policy.safetensors</code>: weights of the pretrained diffusion policy \( \mu_{\theta_0} \)</li>
+    <li><code>scenes_train.npz</code>, <code>scenes_local.npz</code>: the scenes for fine-tuning and for the local checker</li>
+    <li><code>runner.sh</code>: script to run your training and the local checker</li>
+    <li><code>euler-guide.md</code>: guide that describes how to run this task on the Euler cluster</li>
+    <li><code>fix-permission-errors.md</code>: guide for common Docker permission errors</li>
+    <li><code>requirements.txt</code>: list of dependencies, used by both the checker and Euler</li>
+    <li><code>Dockerfile</code>, <code>checker_client.py</code>, <code>pytransform</code>, <code>scenes_eval.byte</code>: technical files to run the checker</li>
+    <li><code>task4_supplementary.pdf</code>: further details on the environment, the sampler, and the template</li>
+</ul>
+
+
+<h4>Submission Workflow</h4>
+<ol>
+    <li>
+        Install and start <a href="https://www.docker.com/get-started">Docker</a>.
+        Understanding how Docker works and how to use it is beyond the scope of the project.
+        Nevertheless, if you are interested, you could read about its <a href="https://www.ibm.com/think/topics/containers-examples">use cases</a>.
+    </li>
+    <li>
+        <a href='/static/task4_handout.zip' class="btn btn-primary">Download handout</a>
+    </li>
+    <li>
+        The handout contains the solution template <code>solution.py</code>.
+        Sections for your implementation are marked with <code># TODO</code>.
+        Please make sure that your implementation preserves the signature of the <code>fine_tune</code> function,
+        which the checker calls.
+        However, you are free to introduce new functions and classes.
+    </li>
+    <li>
+        You should use Python 3.8.
+        You are free to use any other libraries that are not already imported in the solution template.
+        Important: Please make sure that you list all additional libraries
+        together with their versions
+        in the <code>requirements.txt</code> file provided in the handout.
+    </li>
+    <li>
+        Once you have implemented your solution, run the checker in Docker:
+        <ul>
+            <li>
+                On Linux, run <code>bash runner.sh</code>.
+                In some cases, you might need to
+                <a href="https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user">enable Docker for your user</a>
+                if you see a Docker permission denied error. Please also first
+                refer to the provided guide <em>fix-permission-errors.md</em> before posting questions to the forum.
+            </li>
+            <li>
+                On macOS, run <code>bash runner.sh</code>.
+                Docker might by default restrict how much memory your solution may use.
+                Running over the memory limit will result in Docker writing "Killed" to the terminal.
+                If you encounter out-of-memory issues, you can increase the limits as described in the
+                <a href="https://docs.docker.com/desktop/mac/">Docker Desktop for Mac user manual</a>.
+                You could alternatively run your solution on the ETH Euler cluster.
+                Please follow the guide specified in <em>euler-guide.md</em> in the handout.
+            </li>
+            <li>
+                On Windows, open a PowerShell, change the directory to the handout folder,
+                and run <code>docker build --tag task4 .; docker run --rm -v "$(pwd):/results" task4</code>.
+            </li>
+        </ul>
+    </li>
+    <li>
+        The checker runs your training code, saves your fine-tuned weights to
+        <code>finetuned_policy.safetensors</code>, prints your local score,
+        and generates a <code>results_check.byte</code> file that contains your scores in encrypted form.
+        If the checker fails, it will display an appropriate error message.
+        To check weights you have already trained without training again, run
+        <code>bash runner.sh python -u checker_client.py --eval-only</code>.
+    </li>
+    <li>
+        The <code>results_check.byte</code> file constitutes your submission
+        and needs to be uploaded to the project server
+        along with your <code>solution.py</code> and a link to a one-minute video to pass this task.
+        The server reads your scores from this file and shows your public score on the leaderboard.
+    </li>
+    <li>
+        We limit submissions to the server to 40 per team, with at most 20 in a 24-hour period.
+    </li>
+</ol>
+
+<h4>Extended Evaluation</h4>
+<p>
+    This part of the task is optional but highly encouraged.
+    If you set the global variable <code>ENABLE_EXTENDED_ANALYSIS</code>
+    in the solution script to <code>True</code>,
+    the checker saves a PDF that plots trajectories of the pretrained policy
+    next to trajectories of your fine-tuned policy on the same episodes,
+    and reports which routes each of them takes.
+    This is the quickest way to see whether your policy has become faster,
+    and whether it adapts its route to the scene.
+</p>
+
+
+<h4>Grading</h4>
+
+<p>
+<strong>This is a pass — fail project and you will not receive a grade for this task. You need to pass 3 / 4 projects in the PAI course to be eligible for taking the exam.</strong>
+
+Your algorithm will make predictions on a held out test set, or (for tasks 3 and 4) obtain a single score for its interactions with the environment.
+
+<p> When handing in the task, you need to select which of your submissions will get graded, provide a public link to a video of at most one minute explaining your approach, and submit an AI use disclosure (more on that below).
+Make sure that we can access the video link till the first of February of the following year.
+Every student has to submit an individual 1 minute long video. <strong>You must appear on camera, explaining and justifying your approach in your own voice.</strong> Videos without your face and your own spoken explanation (for example slides only, a silent screen recording, or text-to-speech) will not be graded. 
+This has to be done <strong>individually by each member</strong> of the team.
+For generating the video link, please use the ETH <a href="https://polybox.ethz.ch/index.php/login/">polybox </a> service, upload your video there and generate a shareable link (see this <a href="https://unlimited.ethz.ch/en/help/storage/manuals-and-documentation/manuals-polybox/share-with-polybox#Sharewithpolybox-SharingwithpeopleoutsideETH">documentation </a> for more detail).
+Submissions that are not handed-in, do not have a video that we can access till the first of February of the following year, have a video exceeding the one minute threshold or lack an AI use disclosure will not be graded. </p>
+
+<p> We will compare your selected submission to our public baseline, which is visible on the public leaderboard. You pass this project if your submitted solution beats our public baseline.
+At the end of the semester, we will award one team with a certificate and prize for their performance on this task. The selection criteria are based on the team’s performance on our public and private leaderboards and the creativity of their solution. The prize will be disclosed at the end of the semester.
+The private leaderboards are based on a separate test score on an undisclosed test set or (for task 3 and 4) environment. You only receive feedback about your performance on the public part in the form of the public score, while the private leaderboard remains secret. The purpose of this division is to prevent overfitting to the public score. Your model should generalize well to the private part of the test set.
+The creativity of your solution will be evaluated by our TAs based on your video submission. </p>
+
+</p>
+
+<div class="alert alert-danger">
+  <i class="fa fa-exclamation-triangle fa-fw" aria-hidden="true"></i>
+  Make sure that you properly hand in the task, otherwise you will fail this task.
+</div>
+
+
+<h4>Plagiarism</h4>
+<p class="text-justify">
+The use of <strong>open-source</strong> libraries is allowed and encouraged, except code that could reasonably be considered a solution to this or previous years’ PAI projects. We do not allow copying the work of other groups / students outside the group (including work produced by students in previous versions of this course). <strong>Publishing project solutions online is not allowed and use of solutions from previous years in any capacity is considered plagiarism</strong>. Among the code, including those of previous years, we search for similar solutions in order to detect plagiarism. If we find strong evidence for plagiarism, we reserve the right to let the respective students or the entire group fail in the PAI 2026 course and take further disciplinary actions.
+
+
+By submitting the solution, you agree to abide by the plagiarism guidelines of PAI 2026.
+</p>
+
+<h4>AI policy</h4>
+<p class="text-justify">
+You are allowed to use AI tools (such as Copilot, ChatGPT/Codex, Claude Code or similar) when working on the project. However, you remain fully responsible for your submission and are expected to understand the solution you submit, including the underlying concepts, methodology, and implementation. AI-generated output must be reviewed and tested rather than submitted without verification.
+</p>
+<p class="text-justify">
+<strong>As part of the final hand-in, you must briefly disclose which AI tools you used and for what purposes </strong>(for example code completion, debugging, conceptual explanations, writing, or no AI use). This disclosure is not graded and the use of AI does not reduce your score.
+</p>
+<p class="text-justify">
+<strong>To verify your understanding, we will be using AI tools to evaluate, score, and assess the plausibility of your submissions and videos.</strong> We reserve the right to invite students to additional follow-up oral discussions if the submission raises questions about the student's understanding.
+</p>
+
+<h4>Frequently asked questions</h4>
+<h5><span class="glyphicon glyphicon-record"></span> Which programming language am I supposed to use? What tools am I allowed to use?</h5>
+<p> You must implement your solution in Python, in the provided solution template <code>solution.py</code>. You may use any software library. You can use publicly available code that was not produced directly for the purposes of this course, but you should specify the source as a comment in your code.</p>
+
+<h5><span class="glyphicon glyphicon-record"></span> Am I allowed to use models that were not taught in the class?</h5>
+<p>Yes. Nevertheless, the baselines were designed to be solvable based on the material mentioned in the project description or taught in the class up to the second week of each task.</p>
+
+<h5><span class="glyphicon glyphicon-record"></span> In what format should I submit the code?</h5>
+<p>Upload your <code>solution.py</code> as a single file. Do not upload a .zip or other files. Your <code>results_check.byte</code> and <code>solution.py</code> together may be at most 1 MB.</p>
+
+<h5><span class="glyphicon glyphicon-record"></span> Will you check / run my code?</h5>
+<p>We will check your code and compare it with other submissions. We also reserve the right to run your code. Please make sure that your code is runnable and your predictions are reproducible (fix the random seeds, etc.).</p>
+
+<h5><span class="glyphicon glyphicon-record"></span> Should I include the data in the submission?</h5>
+No. You can assume the data will be available under the path that you specify in your code.
+<!--For example, you could read in the dataset as:-->
+<!--<pre>import pandas as pd<br>df_train = pd.read_csv('train.csv')</pre>-->
+
+<h5><span class="glyphicon glyphicon-record"></span> Can you help me solve the task? Can you give me a hint?</h5>
+<p>As the tasks are a graded (pass/fail) part of the class, <strong>we cannot help you solve them</strong>. However, feel free to ask general questions about the course material during or after the exercise sessions.</p>
+
+<h5><span class="glyphicon glyphicon-record"></span> Can you give me a deadline extension?</h5>
+<div class="alert alert-danger">
+  <i class="fa fa-exclamation-triangle fa-fw" aria-hidden="true"></i>
+  We do not grant any deadline extensions!
+</div>
+
+<h5><span class="glyphicon glyphicon-record"></span> Can I post on Moodle as soon as have a question?</h5>
+<p>This is highly discouraged. Remember that collaboration with other teams is prohibited. Instead,</p>
+<ul>
+<li>Read the details of the task thoroughly.</li>
+<li>Review the frequently asked questions.</li>
+<li>If there is another team that solved the task, spend more time thinking.</li>
+<li>Discuss it with your team-mates.</li>
+</ul>
+
+<h5><span class="glyphicon glyphicon-record"></span> When will I receive the private scores? And the project grades?</h5>
+<p>We will publish the private scores, and corresponding grades before the exam at the latest.</p>
+      </div>
+    </div>
+  </div>
+  <div class="tab-pane" id="submission">
+    
+    <div class="panel panel-default">
+      <div class="panel-body">
+	<h2><i class="fa fa-spin fa-spinner fa-fw" aria-hidden="true"></i> 2. Submissions <small>closes on Sunday 13 Dec 2026 23:59</small></h2>
+
+	
+
+	<div class="alert alert-info" role="alert">
+	  <h3><i class="fa fa-info-circle fa-fw" aria-hidden="true"></i> Submission rules</h3>
+	  <ul>
+	    <li>For this task, you submit solutions as part of the group 'Ethahaha'.</li>
+	    <li>Your group has a joint total 40 submissions. You have already used 0 submissions.</li>
+	    <li>Your group may only submit if no more than 20 submissions have been made in the last 1 day, 0:00:00 hours. In this time span, you have submitted 0 solutions.</li>
+	    <li>Submit wisely as failed submissions count for both limits.</li>
+	    <li>You may submit solutions until Sunday 13 Dec 2026 23:59. We cannot provide deadline extensions.</li>
+	  </ul>
+	</div>
+	<hr />
+	<h3>New submission</h3>
+	
+	
+
+	<form method="POST" enctype="multipart/form-data">
+	  <input id="sf-csrf_token" name="sf-csrf_token" type="hidden" value="IjZjMmI3YTRmYjIzNmFiOTJiNDljYzQxMWQzMjFlMGViMzE1ZDM4ZDUi.awSHig.N5Owe4PLse-9HnNI0p2K_T8k4Rk">
+
+
+	  <div class="form-group ">
+	    <label for="sf-file" class="control-label">Your submission</label>
+	    <input accept=".byte" class="form-control" id="sf-file" name="sf-file" required type="file">
+	    
+	    <span id="helpBlock" class="help-block">Please upload the <code>results_check.byte</code> file generated by the checker. (Total max 1 MB)</span>
+	    
+	  </div>
+
+		<div class="form-group ">
+	    <label for="sf-source_code" class="control-label">Your code</label>
+	    <input accept=".py" class="form-control" id="sf-source_code" name="sf-source_code" required type="file">
+	    
+	    <span id="helpBlock" class="help-block">Please upload the handout's <code>solution.py</code> with your solution in it. The file must be named exactly <code>solution.py</code>: rename it if it is called anything else, e.g. <code>solution (1).py</code>. Zips and other files are not accepted. (Total max 1 MB)</span>
+	    
+	  </div>
+
+	  <div class="form-group ">
+	    <label for="sf-description" class="control-label">Description</label>
+	    <input class="form-control" id="sf-description" maxlength="50" minlength="1" name="sf-description" type="text" value="">
+	    
+	    <span id="helpBlock" class="help-block">Please provide a description of your submission.</span>
+	    
+	  </div>
+
+	  <input class="btn btn-primary" id="sf-submit" name="sf-submit" type="submit" value="Add submission">
+	</form>
+
+	
+
+
+	
+	<hr />
+	<h3>Your submissions <small><a href='javascript:window.location.reload(true)'>refresh</a></small></h3>
+
+	<div style="max-height:400px;overflow:auto;">
+	  <table class="table table-striped">
+	    <thead>
+	      <tr>
+		<th>#</th>
+		<th>Filename</th>
+		<th>Source Code</th>
+		<th>Description</th>
+		<th>Author</th>
+		<th>Date</th>
+		<th>Status</th>
+		<th>Public score</th>
+        
+		<th>Handin</th>
+	      </tr>
+	    </thead>
+	    <tbody>
+	      
+	    </tbody>
+	  </table>
+	</div>
+	<hr />
+	<h3>Public leaderboard <small><a href='javascript:window.location.reload(true)'>refresh</a></small></h3>
+
+	<div style="max-height:400px;overflow:auto;">
+	  <table class="table table-striped table-condensed">
+	    <thead>
+	      <tr>
+		<th>#</th>
+		<th>Group name</th>
+		<th>Score</th>
+	      </tr>
+	    </thead>
+	    <tbody>
+	      
+	      <tr class="success">
+		<th>1</th>
+		<td>baseline</td>
+		<td>0.6</td>
+	      </tr>
+	      
+	    </tbody>
+	  </table>
+	</div>
+      </div>
+    </div>
+  </div>
+  <div class="tab-pane" id="handin">
+    <div class="panel panel-default">
+      <div class="panel-body">
+	<h2><i class="fa fa-spin fa-spinner fa-fw" aria-hidden="true"></i> 3.
+		Handin
+		<small>closes on Monday 14 Dec 2026 00:02</small>
+	</h2>
+
+		  <div class="alert alert-info" role="alert">
+			  <h3><i class="fa fa-info-circle fa-fw" aria-hidden="true"></i> How to obtain points</h3>
+			  <p>To obtain points for this task, you have to <b>individually</b> hand in the task as follows:</p>
+			  <ul class="">
+				  <li>You need to select one of your group's submissions for grading. You will only be graded (pass / fail) on that
+					  submission.
+				  </li>
+				  <li>You have to record a video of at most one minute in which you appear on camera and explain
+					  and justify your approach. <b>Each student has to
+					  individually create their own video and you are not allowed to share the video with
+					  your other group members.</b></li>
+				  <li>You have to disclose which AI tools you used and for what purposes.
+					  This disclosure is not graded and using AI does not reduce your score,
+					  but leaving it out makes your hand-in incomplete.</li>
+				  <li>You may be invited to attend an oral interview to prove your
+					  understanding of the solution. We use AI tools to evaluate, score,
+					  and assess the plausibility of your submissions and videos.</li>
+			  </ul>
+			  <p>If you do not properly hand in the task, you will fail the task.</p>
+		  </div>
+		  <div class="alert alert-danger">
+			  <i class="fa fa-exclamation-triangle fa-fw" aria-hidden="true"></i>
+			  Your hand-in is complete once your submission selection, video report URL, and AI use disclosure are saved.
+			  Refresh this page and check <b>Current status</b> below: all three items must be present and the green message
+			  must confirm that your responses have been saved and your selected submission will be graded.
+		  </div>
+
+	<hr />
+	<h3>Current status</h3>
+	
+	<div class="alert alert-danger" role="alert">
+	  <i class="fa fa-exclamation-triangle fa-fw" aria-hidden="true"></i> Your hand-in is not complete. Everything marked "n/a" below is still outstanding, and all three are required: an incomplete hand-in is a fail. You can still complete it until Monday 14 Dec 2026 00:02.
+	</div>
+	
+	<div class="form-group has-error">
+	  <label class="control-label"> Current submission selected for grading</label>
+	  <div class="well well-sm handin-readback">
+	    
+	    <span class="text-muted">n/a</span>
+	    
+	  </div>
+	  <p class="help-block">You may select a submission to be graded (pass / fail) under "Your submissions".</p>
+	</div>
+	<div class="form-group has-error">
+	  <label class="control-label"> Current video report URL</label>
+	  <div class="well well-sm handin-readback">
+	    
+	    <span class="text-muted">n/a</span>
+	    
+	  </div>
+	  <p class="help-block">You may enter a URL to your video below.</p>
+	</div>
+	<div class="form-group has-error">
+	  <label class="control-label"> Current AI use disclosure</label>
+	  <div class="well well-sm handin-readback">
+	    
+	    <span class="text-muted">n/a</span>
+	    
+	  </div>
+	  <p class="help-block">Please record your AI use below. The AI policy requires you to disclose which tools you used and what you used them for, so the disclosure is part of your hand-in. What you disclose is not graded: using AI does not reduce your score.</p>
+	</div>
+    
+
+
+	
+	<hr />
+	<h3>Video report URL</h3>
+	
+	<form method="POST">
+	  <input id="video-csrf_token" name="video-csrf_token" type="hidden" value="IjZjMmI3YTRmYjIzNmFiOTJiNDljYzQxMWQzMjFlMGViMzE1ZDM4ZDUi.awSHig.N5Owe4PLse-9HnNI0p2K_T8k4Rk">
+	  
+    
+	  <div class="form-group">
+	    <label for="video-description" class="control-label">URL</label>
+	    <input class="form-control" id="video-description" inputmode="url" name="video-description" required title="Your video must be a public Polybox share link, e.g. polybox.ethz.ch/index.php/s/..." type="text" value="">
+	    <span id="helpBlock" class="help-block">Please provide a public Polybox share link (<code>polybox.ethz.ch/index.php/s/...</code>) to a video of at most one minute in which you appear on camera and explain and justify your approach in your own voice.</span>
+	  </div>
+	  <div class="checkbox">
+      <label for="video-contributed">
+	<input id="video-contributed" name="video-contributed" required type="checkbox" value="y">
+	I hereby confirm that I have contributed to the work of my team.
+      </label>
+    </div>
+	  <div class="checkbox">
+      <label for="video-videocheck">
+	<input id="video-videocheck" name="video-videocheck" required type="checkbox" value="y">
+	The video link will be publicly accessible on the first of February and is not longer than one minute.
+      </label>
+    </div>
+	  <div class="checkbox">
+      <label for="video-plagiarism">
+	<input id="video-plagiarism" name="video-plagiarism" required type="checkbox" value="y">
+	I hereby confirm that I am the sole author of the video above
+      </label>
+    </div>
+	  <input aria-label="Save video report URL" class="btn btn-primary" id="video-submitbut" name="video-submitbut" type="submit" value="Save">
+	</form>
+
+	<hr />
+	<h3>AI use disclosure</h3>
+	
+	<form method="POST">
+	  <input id="disclosure-csrf_token" name="disclosure-csrf_token" type="hidden" value="IjZjMmI3YTRmYjIzNmFiOTJiNDljYzQxMWQzMjFlMGViMzE1ZDM4ZDUi.awSHig.N5Owe4PLse-9HnNI0p2K_T8k4Rk">
+	  <p class="help-block">
+	    This disclosure is <strong>not graded</strong> and does not affect your
+	    score or whether your solution passes.
+	  </p>
+	  
+    
+
+	  
+	  <div class="form-group" id="ai-disclosure">
+	    <label class="control-label">Which AI tools did you use?</label>
+	    <div class="checkbox">
+      <label for="disclosure-ai_tool_none">
+	<input data-missing-message="Please select at least one AI tool you used, name it under &#34;Other&#34;, or tick &#34;I did not use any AI tools for this task.&#34;" id="disclosure-ai_tool_none" name="disclosure-ai_tool_none" type="checkbox" value="y">
+	I did not use any AI tools for this task.
+      </label>
+    </div>
+	    <div class="checkbox">
+      <label for="disclosure-ai_tool_chatgpt">
+	<input id="disclosure-ai_tool_chatgpt" name="disclosure-ai_tool_chatgpt" type="checkbox" value="y">
+	ChatGPT
+      </label>
+    </div><div class="checkbox">
+      <label for="disclosure-ai_tool_claude">
+	<input id="disclosure-ai_tool_claude" name="disclosure-ai_tool_claude" type="checkbox" value="y">
+	Claude
+      </label>
+    </div><div class="checkbox">
+      <label for="disclosure-ai_tool_gemini">
+	<input id="disclosure-ai_tool_gemini" name="disclosure-ai_tool_gemini" type="checkbox" value="y">
+	Gemini
+      </label>
+    </div><div class="checkbox">
+      <label for="disclosure-ai_tool_copilot">
+	<input id="disclosure-ai_tool_copilot" name="disclosure-ai_tool_copilot" type="checkbox" value="y">
+	GitHub Copilot
+      </label>
+    </div><div class="checkbox">
+      <label for="disclosure-ai_tool_claude_code">
+	<input id="disclosure-ai_tool_claude_code" name="disclosure-ai_tool_claude_code" type="checkbox" value="y">
+	Claude Code
+      </label>
+    </div><div class="checkbox">
+      <label for="disclosure-ai_tool_codex">
+	<input id="disclosure-ai_tool_codex" name="disclosure-ai_tool_codex" type="checkbox" value="y">
+	OpenAI Codex
+      </label>
+    </div><div class="checkbox">
+      <label for="disclosure-ai_tool_cursor">
+	<input id="disclosure-ai_tool_cursor" name="disclosure-ai_tool_cursor" type="checkbox" value="y">
+	Cursor
+      </label>
+    </div>
+	    <div class="form-group  ">
+        
+            <label for="disclosure-ai_tool_other" class="control-label">Other - please name the tool</label>
+        
+        <input class="form-control" id="disclosure-ai_tool_other" name="disclosure-ai_tool_other" type="text" value="">
+        
+    </div>
+
+	    <label class="control-label">How did you use them?</label>
+	    <div class="checkbox">
+      <label for="disclosure-ai_use_concepts">
+	<input data-missing-message="Please select at least one way you used it, or describe it under &#34;Other&#34;." id="disclosure-ai_use_concepts" name="disclosure-ai_use_concepts" type="checkbox" value="y">
+	Understanding the task or explaining course concepts
+      </label>
+    </div><div class="checkbox">
+      <label for="disclosure-ai_use_resources">
+	<input id="disclosure-ai_use_resources" name="disclosure-ai_use_resources" type="checkbox" value="y">
+	Finding resources (papers, library documentation, examples)
+      </label>
+    </div><div class="checkbox">
+      <label for="disclosure-ai_use_approach">
+	<input id="disclosure-ai_use_approach" name="disclosure-ai_use_approach" type="checkbox" value="y">
+	Brainstorming or choosing the modelling approach
+      </label>
+    </div><div class="checkbox">
+      <label for="disclosure-ai_use_code">
+	<input id="disclosure-ai_use_code" name="disclosure-ai_use_code" type="checkbox" value="y">
+	Writing or debugging code (completion, generating parts of the solution, fixing errors)
+      </label>
+    </div><div class="checkbox">
+      <label for="disclosure-ai_use_experiments">
+	<input id="disclosure-ai_use_experiments" name="disclosure-ai_use_experiments" type="checkbox" value="y">
+	Tuning hyperparameters, running or analysing experiments
+      </label>
+    </div><div class="checkbox">
+      <label for="disclosure-ai_use_writing">
+	<input id="disclosure-ai_use_writing" name="disclosure-ai_use_writing" type="checkbox" value="y">
+	Writing the video script
+      </label>
+    </div>
+	    <div class="form-group  ">
+        
+            <label for="disclosure-ai_use_other" class="control-label">Other - please describe</label>
+        
+        <input class="form-control" id="disclosure-ai_use_other" name="disclosure-ai_use_other" type="text" value="">
+        
+    </div>
+	  </div>
+
+	  <input aria-label="Save AI use disclosure" class="btn btn-primary" id="disclosure-submitbut" name="disclosure-submitbut" type="submit" value="Save">
+	</form>
+	
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </body>
+
+</html>

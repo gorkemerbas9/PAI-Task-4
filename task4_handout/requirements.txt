@@ -1,0 +1,8 @@
+pyarmor==6.3.3
+cryptography==42.0.8
+# CPU-only torch on x86 Linux, which is several GB smaller than the default CUDA build. No GPU is needed.
+torch @ https://download.pytorch.org/whl/cpu/torch-2.4.1%2Bcpu-cp38-cp38-linux_x86_64.whl ; sys_platform == "linux" and platform_machine == "x86_64"
+torch==2.4.1 ; sys_platform != "linux" or platform_machine != "x86_64"
+safetensors==0.5.3
+numpy==1.24.4
+matplotlib==3.7.5
